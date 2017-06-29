@@ -110,7 +110,7 @@ class google(object):
         return df
 
 
-def google_data(tics=[], year=3, begdate='', enddate=''):
+def googlePrice(tics=[], year=3, begdate='', enddate=''):
     a = google(tics, year, begdate, enddate)
     wp = a.run()
     return wp

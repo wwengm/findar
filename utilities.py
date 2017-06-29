@@ -39,3 +39,29 @@ def makepath(path):
         print('Folder Exist: %s' % path)
         pass
     return
+
+
+def etfcom_extractor(tic):
+    link = 'http://www.etf.com/' + tic
+    text = web_crawler(link)
+    soup = BeautifulSoup(text, "html.parser")
+    content = {}
+    if not (soup.title.text == 'Sorry! | ETF.com'):
+        a = soup.find_all("div", class_="breadcrumb")[0]
+        content['Segment'] = str(a.text[19:])
+
+        # general information
+        a = soup.find_all("div", class_="generalData")
+        content['Fund Description'] = a[0].find('p').text.encode('utf-8')
+        # Other data
+        for n in range(3, 6):
+            c = a[n]
+            rows = c.find_all("div", class_="rowText")
+            for row in rows:
+                field = str(row.find('label').text)
+                desc = str(row.find('span').text)
+                content[field] = desc
+                content['Ticker'] = tic
+    else:
+        print("Not found")
+    return content
