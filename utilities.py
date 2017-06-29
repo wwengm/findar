@@ -1,15 +1,29 @@
 import requests
 import os
+import time
 from bs4 import BeautifulSoup
 
 
 def web_crawler(link):
-    # Pretend browser
-    header = {
-        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36",
-        "X-Requested-With": "XMLHttpRequest"
-    }
-    r = requests.get(link, headers=header)
+    count = 0
+    while True:
+        try:
+            # Pretend browser
+            header = {
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36",
+                "X-Requested-With": "XMLHttpRequest"
+            }
+            r = requests.get(link, headers=header)
+            count += 1
+            break
+        except Exception:
+            if count >= 5:
+                print('Network Err')
+                break
+            else:
+                time.sleep(1 * count)
+                continue
+
     return (r.text)
 
 
@@ -41,6 +55,11 @@ def makepath(path):
     return
 
 
+def setup(event):
+    global unpaused
+    unpaused = event
+
+
 def etfcom_extractor(tic):
     link = 'http://www.etf.com/' + tic
     text = web_crawler(link)
@@ -63,5 +82,5 @@ def etfcom_extractor(tic):
                 content[field] = desc
                 content['Ticker'] = tic
     else:
-        print("Not found")
+        print("%s Not found" % link)
     return content

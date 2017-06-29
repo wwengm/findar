@@ -69,23 +69,27 @@ class google(object):
         If failed then obain by web crawling
         """
         try:
+            print('Connecting Google API')
             wp = web.DataReader(self.tics, 'google',
                                 self.begdate, self.enddate)
             exist = wp.minor_axis.values.tolist()
             for tic in exist:
                 df = wp.minor_xs(tic)
                 if not (df.dropna().empty):
-                    df.Volume = df.Volume.apply(
-                        lambda x: int(x))
+                    df = df.applymap(lambda x: str(x).replace(',', ''))
                     self.data[tic] = df
             self.remain = [x for x in self.tics if x not in self.data]
+            if (self.remain):
+                print('%s stocks remains, searching Google_Web' %
+                      len(self.remain))
         except Exception:
             pass
         self.core()
         self.remain = [x for x in self.tics if x not in self.data]
         wp = pd.Panel.from_dict(self.data, orient='minor')
-        print('%s not found on google Finance. Please check tickers' %
-              self.remain)
+        if (self.remain):
+            print('%s not found on google Finance. Please check tickers' %
+                  self.remain)
         return wp
 
     """
@@ -106,7 +110,7 @@ class google(object):
         df.Timestamp = pd.to_datetime(df.Timestamp)
         df = df.sort_values('Timestamp')
         df = df.set_index('Timestamp')
-        df.Volume = df.Volume.apply(lambda x: int(x.replace(',', '')))
+        df = df.applymap(lambda x: str(x).replace(',', ''))
         return df
 
 

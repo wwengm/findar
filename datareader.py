@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
 import pandas as pd
 import pandas_datareader.data as web
-from .utilities import bs_table_extractor, etfcom_extractor
+from .utilities import bs_table_extractor, etfcom_extractor, setup
 from dateutil.relativedelta import relativedelta
 import warnings
 import time
-from multiprocessing import Pool
+from multiprocessing import Pool, Event
 
 warnings.filterwarnings('ignore')
 
@@ -38,7 +38,7 @@ def getCons(index):
     else:
         print('Index Error')
         return
-
+    print('getCons successful')
     return df
 
 
@@ -74,6 +74,7 @@ def getBoardLot():
     df = pd.concat(df_all)
     df = df.sort_values('STOCK CODE')
     df = df.reset_index(drop=True)
+    print('getBoardLot successful')
     return df
 
 
@@ -111,6 +112,7 @@ def getLIBOR(year=3, begdate='', enddate='',
         df1.columns = df.columns
         df = df.append(df1)
         df.index = pd.DatetimeIndex(df.index).normalize()
+    print('getLIBOR successful')
     return df
 
 
@@ -158,20 +160,27 @@ def getETF(mkt=''):
     else:
         print('Market must be US or HK')
         return
+    print('getETF successful')
     return full_list
 
 
-def getETFinfo(mkt=''):
+def getETFinfo(mkt='', processes=10):
     if (mkt == 'US' or mkt == 'us'):
         print('Getting ETF info from ETF.com')
         etf_list = getETF(mkt='US')
         tics = map(str, etf_list.Symbol.values.tolist())
 
-        p = Pool()
+        event = Event()
+        p = Pool(processes, setup, (event,))
         rs = p.map_async(etfcom_extractor, tics, chunksize=1)
+        event.set()
         while not rs.ready():
-            print("num left: {}".format(rs._number_left))
             time.sleep(60)
+            event.clear()  # pause after five seconds
+            print("PAUSED, {} left".format(rs._number_left))
+            time.sleep(5)
+            event.set()
+            print("RESUMED")
         ac = rs.get()
         info = []
         for content in ac:
@@ -194,6 +203,7 @@ def getETFinfo(mkt=''):
     else:
         print('Market must be US or HK')
         return
+    print('getETFinfo successful')
     return info
 
 
