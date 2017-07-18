@@ -1,0 +1,14 @@
+setup.py
+findar/__init__.py
+findar/datareader.py
+findar/example2.py
+findar/examples.py
+findar/google.py
+findar/quandlp.py
+findar/utilities.py
+findar.egg-info/PKG-INFO
+findar.egg-info/SOURCES.txt
+findar.egg-info/dependency_links.txt
+findar.egg-info/not-zip-safe
+findar.egg-info/requires.txt
+findar.egg-info/top_level.txt

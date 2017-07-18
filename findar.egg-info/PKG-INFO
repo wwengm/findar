@@ -1,0 +1,11 @@
+Metadata-Version: 1.0
+Name: findar
+Version: 0.30
+Summary: Financial Datareader (findar)
+Home-page: https://github.com/wwengm/findar
+Author: wwengm
+Author-email: UNKNOWN
+License: MIT
+Description: Financial Datareader provides data solutions to quantitative trading and       backtesting.Currently provides up-to-date index constituent lists, full ETF lists       trading boardlots, fundamental informations, Libor rates etc, for both US and HK market.
+Keywords: financial data
+Platform: UNKNOWN
